@@ -1,0 +1,9 @@
+0.2.1  2025-10-14
+  + bugfix: Parser no longer enters an infite loop when passed an invalid stream.
+  
+0.2.0  2025-10-09
+  + Adds escape sequence support (see docs.md)
+
+0.1.0  2025-10-09
+  + Adds ReadLine() function to csv parser, no support for escape sequences. Characters matching escape_character are ignored.
+  + Initial release
