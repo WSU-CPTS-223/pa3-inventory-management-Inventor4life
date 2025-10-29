@@ -6,7 +6,7 @@
 int main(void) {
   
   std::cout << "Hello, World!" << std::endl;
-  HelloHash();
+  //HelloHash();
   HelloHashTest();
   return 0;
 }

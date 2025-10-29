@@ -40,11 +40,12 @@ private:
     void UpdateLoadFactor_();
     bool RequireRehash_(int new_node_index);
     unsigned int GetNextSize_() const;
-    void InsertAt_(HashTableContainer<Key, Value>* destination_array, Key& key, Value& value);
+    void InsertAt_(HashTableContainer<Key, Value>* destination_array, unsigned int array_size, Key& key, Value& value);
     HashTableContainer<Key, Value>* Get(int index, int depth = 0);
     void DeleteAt_(int index, int depth);
     std::pair<int, int> Find_(Key& key);
     int GetPotentialIndex_(Key& key);
+    int GetPotentialIndexUnsized(Key& key, unsigned int table_capacity);
 
     std::hash<Key> hasher_;
     HashTableContainer<Key, Value>* container_array_;
@@ -73,6 +74,7 @@ public:
     bool operator!=(const Iterator<Key, Value>& right) const; // inequality operator
 
 private:
+    friend HashTable<Key, Value>;
     // index of -1 indicates a non-iterable iter-inator (a platypus?)
     int index_;
     HashTableContainer<Key, Value>* current_node_;
@@ -113,7 +115,7 @@ Iterator<Key, Value> HashTable<Key, Value>::Find(Key &key) {
 
 template<typename Key, typename Value>
 void HashTable<Key, Value>::Insert(Key &key, Value &value) {
-    InsertAt_(container_array_, key, value);
+    InsertAt_(container_array_, this->capacity(), key, value);
 }
 
 template<typename Key, typename Value>
@@ -127,13 +129,41 @@ void HashTable<Key, Value>::Delete(Key &key) {
 // There is an edge case here where the old nodes, when inserted into the new array,
 //  form a linked list longer than kMaxContainerDepth. This edge case will not be handled
 //  automatically, and will instead be caught if another container is inserted at that index.
+//
+// This implementation is very inefficient, as it de-allocates and re-allocates the out-of-array nodes when they could
+//  simply be re-used. However, doing so (with my current implementation) would require traversing a singly-linked list backwards and
+//  would only affect the efficiency during re-hashes (of which there are only 15 that are relevant given current max table size)
 template<typename Key, typename Value>
 void HashTable<Key, Value>::Rehash_() {
+    unsigned int new_size = GetNextSize_();
+    if (new_size == capacity()) return; // Don't rehash if new table size is same as old one.
+    HashTableContainer<Key, Value>* new_table = new HashTableContainer<Key, Value>[new_size];
+    if (new_table == nullptr) return; // Dynamic allocation failed, don't rehash
+    for (auto & item : *this)
+    {
+        this->InsertAt_(new_table, this->capacity(), item.first, item.second);
+    }
+    this->capacity_ = new_size;
+    delete[] container_array_;
+    this->container_array_ = new_table;
+
 }
 
 template<typename Key, typename Value>
-void HashTable<Key, Value>::InsertAt_(HashTableContainer<Key, Value> *destination_array, Key& key, Value &value) {
+void HashTable<Key, Value>::InsertAt_(HashTableContainer<Key, Value> *destination_array, unsigned int array_size, Key& key, Value &value) {
+    // Internal function. Does not verify inputs. (array_size being 0, destination_array being nullptr...)
+    unsigned int potential_index = GetPotentialIndexUnsized(key, array_size);
+    HashTableContainer<Key, Value>* current_node = &destination_array[potential_index];
 
+    // Current node is linked list HEAD
+    if (current_node->IsValid())
+    {
+        // If HEAD is valid, insert new node into the list right after the head
+        current_node->SetNext(new HashTableContainer<Key, Value>(key, value, current_node->GetNext()));
+    } else
+    {
+        *current_node = HashTableContainer<Key, Value>(key, value); // Automatically set as valid by constructor
+    }
 }
 
 // As this is an internal function, it is assumed that the index and depth values are already verified.
@@ -173,7 +203,7 @@ std::pair<int, int> HashTable<Key, Value>::Find_(Key &key) {
     //if (this->capacity() == 0) return std::make_pair(-1, -1); // State validation should occur in public functions
     int potential_index = GetPotentialIndex_(key);
     int depth = 0;
-    HashTableContainer<Key,Value>* current_node = container_array_[potential_index];
+    HashTableContainer<Key,Value>* current_node = this->Get(potential_index);
     while (current_node != nullptr && current_node->IsValid()) {
         if (current_node->GetKey() == key) {return std::make_pair(potential_index, depth);}
         current_node = current_node->GetNext();
@@ -186,7 +216,13 @@ template<typename Key, typename Value>
 int HashTable<Key, Value>::GetPotentialIndex_(Key &key) {
     if (capacity_ == 0) {return 0;}
     //else
-    return hasher_(key) % this->capacity();
+    return this->GetPotentialIndexUnsized(key, this->capacity());
+}
+
+template <typename Key, typename Value>
+int HashTable<Key, Value>::GetPotentialIndexUnsized(Key& key, unsigned int table_capacity)
+{
+    return hasher_(key) % table_capacity;
 }
 
 template<typename Key, typename Value>
