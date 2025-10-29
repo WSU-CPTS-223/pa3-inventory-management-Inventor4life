@@ -1,12 +1,14 @@
-#include "hash_table.h"
-#include "hash_table_test.h"
-
-#include <iostream>
+#include "header.h"
 
 int main(void) {
-  
-  std::cout << "Hello, World!" << std::endl;
-  //HelloHash();
-  HelloHashTest();
+  //*
+  hash_table_test::TestAll();
+  /*/
+  std::cout << "Beginning REPL" << std::endl;
+  HashTable<std::string, Product> product_database;
+  HashTable<std::string, std::vector<std::string>> categories_database;
+  LoadDataFromFile("../data/marketing_sample.csv", product_database, categories_database);
+  //*/
+  std::cout << "Done!" << std::endl;
   return 0;
 }

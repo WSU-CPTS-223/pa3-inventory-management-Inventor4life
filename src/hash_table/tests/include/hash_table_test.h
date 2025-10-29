@@ -1,12 +1,12 @@
 #ifndef HASH_TABLE_TEST_H
 #define HASH_TABLE_TEST_H
 
-#include "hash_table.h"
-
-#include <iostream>
-
-void HelloHashTest() {
-    std::cout << "HELLO FROM HASH TEST HEADER" << std::endl;
+namespace hash_table_test {
+    void InsertTest();
+    void FindTest();
+    void DeleteTest();
+    void TestAll();
+    void IterationTest();
 }
 
 #endif // !HASH_TABLE_TEST_H

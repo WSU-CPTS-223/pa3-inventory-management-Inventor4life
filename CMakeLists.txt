@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(inventory_management)
-add_executable(main src/base/main.cc)
+add_executable(main src/base/main.cc
+		src/base/product.h
+		src/base/functions.cc
+		src/base/header.h)
 
 add_subdirectory(src/csv_parser)
 target_link_libraries(main PUBLIC csv_parser)

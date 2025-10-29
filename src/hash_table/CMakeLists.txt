@@ -5,7 +5,8 @@ add_library(hash_table INTERFACE include/hash_table.h
         src/hash_table_container.h) # interface because there are no .cpp files
 target_include_directories(hash_table INTERFACE include src/)
 
-add_library(hash_table_test STATIC tests/include/hash_table_test.h tests/src/hash_table_test.cc)
+add_library(hash_table_test STATIC tests/include/hash_table_test.h tests/src/hash_table_test.cc
+        tests/src/hash_table_test_i.h)
 target_include_directories(hash_table_test PUBLIC tests/include)
 target_link_libraries(hash_table_test PRIVATE hash_table)
 #set_target_properties(hash_table_test PROPERTIES LINKER_LANGUAGE CXX)
