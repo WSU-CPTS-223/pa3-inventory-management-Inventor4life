@@ -1,7 +1,7 @@
 #include "header.h"
 
 int main(void) {
-  //*
+  /*
   hash_table_test::TestAll();
   /*/
   std::cout << "Beginning REPL" << std::endl;

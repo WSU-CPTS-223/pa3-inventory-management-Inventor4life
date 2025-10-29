@@ -230,6 +230,7 @@ std::pair<int, bool> HashTable<Key, Value>::InsertAt_(HashTableContainer<Key, Va
             //  or if an invalid node that can contain the new node is found.
             bool node_was_valid = current_node->IsValid();
             *current_node = std::move(source);
+            current_node->SetNext(nullptr);
             return std::make_pair(potential_index, node_was_valid);
         }
 
@@ -345,9 +346,9 @@ HashTable<Key, Value> & HashTable<Key, Value>::operator=(const HashTable &other)
     capacity_ = other.capacity();
     UpdateLoadFactor_();
     container_array_ = new HashTableContainer<Key, Value>[capacity()];
-    memcpy(container_array_, other.container_array_, capacity() * sizeof(HashTableContainer<Key, Value>));
     for (int i = 0; i < capacity(); i++) {
-        HashTableContainer<Key, Value>* current_node = this->Get(i);
+        HashTableContainer<Key, Value>* current_node = other.Get(i);
+        container_array_[i] = *current_node;
         for (int depth = 0;; depth++) {
          if (current_node->IsValid() && current_node->GetNext() != nullptr) {
              HashTableContainer<Key, Value>* next_node = current_node->GetNext();

@@ -22,7 +22,9 @@ std::vector<std::string> SeparateIntoCategories(const std::string& input) {
     std::vector<std::string> categories;
     std::string current_string;
     for (char i : input) {
-        if (i == '|') {
+        if (i == ' ' && current_string.empty()) continue; // [ Ignore this space
+        if (i == '|') { // Delimiter is " | " <--------------]
+            current_string.pop_back(); //^pop this space
             categories.push_back(current_string);
             current_string.clear();
             continue;
