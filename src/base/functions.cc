@@ -11,7 +11,7 @@ void AddToCategory(std::string category_name, const std::string& uniq_id, HashTa
     auto && i = categories_database.Find(category_name);
     if (i != categories_database.end()) {
     // Inserting into an existing category
-        current_category_ids = (*i).second;
+        (*i).second.push_back(uniq_id);
     }
     current_category_ids.push_back(uniq_id);
     // Because of our insert implementation, this overrides previous category.

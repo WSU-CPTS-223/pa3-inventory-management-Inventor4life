@@ -78,7 +78,7 @@ public:
     explicit Iterator(const HashTable<Key, Value>& main_table);
     //Iterator<Key, Value>& operator=(Iterator<Key,Value>& right); // Copy assignment
     Iterator<Key, Value>& operator++(); // pre-increment operator
-    std::pair<const Key&,const Value&> operator*() const; // de-reference operator
+    std::pair<Key&,Value&> operator*() const; // de-reference operator
     bool operator!=(const Iterator<Key, Value>& right) const; // inequality operator
     bool operator==(const Iterator<Key, Value>& right) const;
 private:
@@ -481,9 +481,9 @@ Iterator<Key, Value> & Iterator<Key, Value>::operator++() {
 }
 
 template<typename Key, typename Value>
-std::pair<const Key&, const Value&> Iterator<Key, Value>::operator*() const {
+std::pair<Key&,Value&> Iterator<Key, Value>::operator*() const {
     if (current_node_ == nullptr) {throw std::out_of_range("Error, dereferencing invalid iterator");}
-    return std::pair<const Key&,const Value&>(current_node_->GetKey(), current_node_->GetValue());
+    return std::pair<Key&,Value&>(current_node_->GetKeyRef(), current_node_->GetValueRef());
 }
 
 template<typename Key, typename Value>

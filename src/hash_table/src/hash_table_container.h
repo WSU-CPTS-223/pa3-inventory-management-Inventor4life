@@ -12,12 +12,13 @@ public:
     HashTableContainer();  // Constructor
     ~HashTableContainer(); // Destructor
     HashTableContainer(HashTableContainer<Key, Value>& other); // Copy constructor
-    HashTableContainer(HashTableContainer<Key, Value>&& other); // Move constructor
+    HashTableContainer(HashTableContainer<Key, Value>&& other) noexcept; // Move constructor
     HashTableContainer(const Key& key, const Value& value, HashTableContainer<Key, Value>* next_ptr = nullptr);  // Parameterized constructor
     HashTableContainer<Key, Value>& operator=(const HashTableContainer<Key, Value>& right); // Copy Assignment
     HashTableContainer<Key, Value>& operator=(HashTableContainer<Key, Value> &&right) noexcept;
 
     const Key &GetKey() const;
+    Key& GetKeyRef();
     void SetKey(const Key& key);
 
     bool IsValid() const;
@@ -26,6 +27,7 @@ public:
     void SetInvalid();
 
     const Value &GetValue() const;
+    Value &GetValueRef();
     void SetValue(const Value& value);
 
     HashTableContainer<Key, Value>* GetNext() const;
@@ -69,7 +71,7 @@ HashTableContainer<Key, Value>::HashTableContainer(HashTableContainer<Key, Value
 }
 
 template<typename Key, typename Value>
-HashTableContainer<Key, Value>::HashTableContainer(HashTableContainer<Key, Value> &&other) {
+HashTableContainer<Key, Value>::HashTableContainer(HashTableContainer<Key, Value> &&other) noexcept {
     *this = std::move(other);
 }
 
@@ -109,6 +111,11 @@ const Key &HashTableContainer<Key, Value>::GetKey() const {
 }
 
 template<typename Key, typename Value>
+Key & HashTableContainer<Key, Value>::GetKeyRef() {
+    return key_;
+}
+
+template<typename Key, typename Value>
 void HashTableContainer<Key, Value>::SetKey(const Key &key) {
     key_ = key;
 }
@@ -135,6 +142,11 @@ void HashTableContainer<Key, Value>::SetInvalid() {
 
 template<typename Key, typename Value>
 const Value &HashTableContainer<Key, Value>::GetValue() const {
+    return this->value_;
+}
+
+template<typename Key, typename Value>
+Value & HashTableContainer<Key, Value>::GetValueRef() {
     return this->value_;
 }
 
