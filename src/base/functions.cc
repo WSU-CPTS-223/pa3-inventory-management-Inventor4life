@@ -12,6 +12,7 @@ void AddToCategory(std::string category_name, const std::string& uniq_id, HashTa
     if (i != categories_database.end()) {
     // Inserting into an existing category
         (*i).second.push_back(uniq_id);
+        return;
     }
     current_category_ids.push_back(uniq_id);
     // Because of our insert implementation, this overrides previous category.
@@ -62,4 +63,5 @@ void LoadDataFromFile(const std::string& filename, HashTable<std::string, Produc
 
         data_line = csv::ReadLine(file);
     }
+    file.close();
 }

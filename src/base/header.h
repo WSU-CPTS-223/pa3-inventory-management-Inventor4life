@@ -9,6 +9,8 @@
 #include "hash_table.h"
 #include "hash_table_test.h"
 #include "product.h"
+#include "repl_manager.h"
+#include "my_commands.h"
 
 #include <string>
 #include <iostream>
