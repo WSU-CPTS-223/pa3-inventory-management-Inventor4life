@@ -24,7 +24,7 @@ int main(void) {
   while (!exit) {
     std::cout << kPrompt << std::flush;
     std::getline(std::cin, line);
-    my_repl_manager.Evaluate(line);
+    if (!line.empty()) my_repl_manager.Evaluate(line);
   }
 
   return 0;
